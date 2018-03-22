@@ -14,9 +14,9 @@ public class TestCSV {
 		ReaderTxt rt;
 		CreateCSV csv;
 		try {
-			rt = new ReaderTxt(new FileReader("C:\\Users\\Aleandro\\Desktop\\file.txt"));
+			rt = new ReaderTxt(new FileReader("C:\\Users\\aleso\\Desktop\\Tesi\\file.txt"));
 			ArrayList<MetricClass> list = rt.execute();
-			csv = new CreateCSV("src\\data\\MetricClasses.csv", list);
+			csv = new CreateCSV("MetricClasses.csv", list);
 			csv.execute();
 			} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
