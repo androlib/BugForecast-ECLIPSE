@@ -69,11 +69,13 @@ public class Model {
 
 		pTrainingSet.setClassIndex(pTrainingSet.numAttributes() - 1);
 		pTestSet.setClassIndex(pTrainingSet.numAttributes() - 1);
-
+		
 		classifier.buildClassifier(pTrainingSet);
 
 		Evaluation eval = new Evaluation(pTrainingSet);
-		eval.evaluateModel(classifier, pTestSet);
+		
+		if(pTestSet == null )eval.evaluateModel(classifier, pTrainingSet);
+		else eval.evaluateModel(classifier, pTestSet);
 
 		return eval;
 	}
