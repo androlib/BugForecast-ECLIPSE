@@ -54,7 +54,7 @@ public class CreateCSV {
 
 	private FileWriter fileWriter;
 	private ArrayList<MetricClass> list;
-	private String COMMA_DELIMITER = ";";
+	private String COMMA_DELIMITER = ",";
 	private String NEW_LINE_SEPARATOR = "\n";
-	private String FILE_HEADER = "name;wmc;dit;noc;cbo;rfc;lcom;ca;npm;bug";
+	private String FILE_HEADER = "name,wmc,dit,noc,cbo,rfc,lcom,ca,npm,bug";
 }

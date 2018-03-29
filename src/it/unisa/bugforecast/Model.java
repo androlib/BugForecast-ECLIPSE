@@ -48,24 +48,24 @@ public class Model {
 		case "Decision Table":
 			classifier = new DecisionTable();
 			break;
-		case "MLP":
+		case "MLP": //non funziona
 			classifier = new MultilayerPerceptron();
 			break;
-		case "RBF":
+		case "RBF": //non funziona
 			classifier = new RBFNetwork();
 			break;
 		case "NB":
 			classifier = new NaiveBayes();
 			break;
-		case "ASCI":
+		case "ASCI": //non funziona
 			classifier = new ASCI();
 			break;
 		default:
 			System.err.println("Unknown classifier.");
 		}
 
-		String[] options = weka.core.Utils.splitOptions(optionsString);
-		classifier.setOptions(options);
+		//String[] options = weka.core.Utils.splitOptions(optionsString);
+		//classifier.setOptions(options);
 
 		pTrainingSet.setClassIndex(pTrainingSet.numAttributes() - 1);
 		pTestSet.setClassIndex(pTrainingSet.numAttributes() - 1);
@@ -74,8 +74,8 @@ public class Model {
 
 		Evaluation eval = new Evaluation(pTrainingSet);
 		
-		if(pTestSet == null )eval.evaluateModel(classifier, pTrainingSet);
-		else eval.evaluateModel(classifier, pTestSet);
+		
+		eval.evaluateModel(classifier, pTestSet);
 
 		return eval;
 	}

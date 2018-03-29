@@ -4,7 +4,7 @@ public class MetricClass {
 
 	public MetricClass() {
 		// TODO Auto-generated constructor stub
-		bug = 0; 
+		bug = false; 
 	}
 	
 
@@ -20,7 +20,7 @@ public class MetricClass {
 		this.six = six;
 		this.seven = seven;
 		this.eight = eight;
-		this.bug = 0;
+		this.bug = false;
 	}
 	
 	public String getName() {
@@ -113,12 +113,12 @@ public class MetricClass {
 	}
 
 
-	public int getBug() {
+	public boolean getBug() {
 		return bug;
 	}
 
 
-	public void setBug(int bug) {
+	public void setBug(boolean bug) {
 		this.bug = bug;
 	}
 
@@ -131,5 +131,5 @@ public class MetricClass {
 	private int six;
 	private int seven;
 	private int eight;
-	private int bug;
+	private boolean bug;
 }

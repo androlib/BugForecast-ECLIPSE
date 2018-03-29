@@ -9,13 +9,13 @@
 @attribute lcom numeric
 @attribute ca numeric
 @attribute npm numeric
-@attribute bug numeric
+@attribute bug {false,true}
 
 @data
-it.unisa.bugforecast.ReaderTxt,6,1,0,1,16,0,1,6,0
-it.unisa.bugforecast.Study,1,1,0,0,2,0,0,1,0
-it.unisa.bugforecast.MetricClass,22,1,0,0,23,165,2,22,0
-it.unisa.bugforecast.CreateTask,8,1,0,4,25,2,1,8,0
-it.unisa.bugforecast.CreateCSV,2,1,0,1,24,0,1,2,0
-it.unisa.bugforecast.TestCSV,2,1,0,2,9,1,0,2,0
-it.unisa.bugforecast.Test,2,1,0,1,6,1,0,2,0
+it.unisa.bugforecast.ReaderTxt,6,1,0,1,16,0,1,6,false
+it.unisa.bugforecast.Study,1,1,0,0,2,0,0,1,true
+it.unisa.bugforecast.MetricClass,22,1,0,0,23,165,2,22,false
+it.unisa.bugforecast.CreateTask,8,1,0,4,25,2,1,8,false
+it.unisa.bugforecast.CreateCSV,2,1,0,1,24,0,1,2,true
+it.unisa.bugforecast.TestCSV,2,1,0,2,9,1,0,2,false
+it.unisa.bugforecast.Test,2,1,0,1,6,1,0,2,false
