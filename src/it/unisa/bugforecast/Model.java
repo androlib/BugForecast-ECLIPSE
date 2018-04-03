@@ -1,8 +1,12 @@
 package it.unisa.bugforecast;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+
 import weka.classifiers.AbstractClassifier;
-import weka.classifiers.evaluation.Evaluation;
 import weka.classifiers.bayes.NaiveBayes;
+import weka.classifiers.evaluation.Evaluation;
 import weka.classifiers.functions.Logistic;
 import weka.classifiers.functions.MultilayerPerceptron;
 import weka.classifiers.functions.RBFNetwork;
@@ -16,67 +20,169 @@ import weka.classifiers.trees.RandomForest;
 import weka.core.Instances;
 
 /**
- * @author Giusy
- */
+aleso
+*/
 public class Model {
 
-	public static Evaluation buildAndEvaluate(String classifierName, String optionsString, Instances pTrainingSet, Instances pTestSet) throws Exception {
-		AbstractClassifier classifier = null;
-
+	public Model(String classifierName, Instances pTrainingSet, Instances pTestSet) {
+		super();
+		this.pTrainingSet = pTrainingSet;
+		this.pTestSet = pTestSet;
+		predictions = new ArrayList<String>();
+		
 		switch (classifierName) {
 		case "Log":
-			classifier = new Logistic();
+			setClassifier(new Logistic());
 			break;
 		case "Voting":
-			classifier = new Vote();
+			setClassifier(new Vote());
 			break;
 		case "Bagging":
-			classifier = new Bagging();
+			setClassifier(new Bagging());
 			break;
 		case "Boostring":
-			classifier = new AdaBoostM1();
+			setClassifier(new AdaBoostM1());
 			break;
 		case "Random Forest":
-			classifier = new RandomForest();
+			setClassifier(new RandomForest());
 			break;
 		case "CODEP":
-			classifier = new Stacking();
+			setClassifier(new Stacking());
 			break;
 		case "C45":
-			classifier = new J48();
+			setClassifier(new J48());
 			break;
 		case "Decision Table":
-			classifier = new DecisionTable();
+			setClassifier(new DecisionTable());
 			break;
 		case "MLP": //non funziona
-			classifier = new MultilayerPerceptron();
+			setClassifier(new MultilayerPerceptron());
 			break;
 		case "RBF": //non funziona
-			classifier = new RBFNetwork();
+			setClassifier(new RBFNetwork());
 			break;
 		case "NB":
-			classifier = new NaiveBayes();
+			setClassifier(new NaiveBayes());
 			break;
 		case "ASCI": //non funziona
-			classifier = new ASCI();
+			setClassifier(new ASCI());
 			break;
 		default:
 			System.err.println("Unknown classifier.");
 		}
-
-		//String[] options = weka.core.Utils.splitOptions(optionsString);
-		//classifier.setOptions(options);
-
+	}
+	
+	public Evaluation buildAndEvaluate() {
 		pTrainingSet.setClassIndex(pTrainingSet.numAttributes() - 1);
 		pTestSet.setClassIndex(pTrainingSet.numAttributes() - 1);
 		
-		classifier.buildClassifier(pTrainingSet);
+		try {
+			getClassifier().buildClassifier(pTrainingSet);
+			Evaluation eval = new Evaluation(pTrainingSet);
+			
+			
+			eval.evaluateModel(getClassifier(), pTestSet);
+			
+			for (int i = 0; i < pTestSet.numInstances(); i++) {
+				   double pred = classifier.classifyInstance(pTestSet.instance(i));
+				   System.out.print("ID: " + pTestSet.instance(i).value(0));
+				   System.out.print(", actual: " + pTestSet.classAttribute().value((int) pTestSet.instance(i).classValue()));
+				   System.out.println(", predicted: " + pTestSet.classAttribute().value((int) pred));
+				   predictions.add(pTestSet.classAttribute().value((int) pred));
+				 
+				 }
+			
+			return eval;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
 
-		Evaluation eval = new Evaluation(pTrainingSet);
 		
-		
-		eval.evaluateModel(classifier, pTestSet);
-
-		return eval;
 	}
+	
+	public void generateFilePredictions() {
+		FileWriter fileWriter;
+		try {
+			fileWriter = new FileWriter("results.csv");
+			fileWriter.append(FILE_HEADER);
+			for (int i = 0; i < pTestSet.numInstances(); i++) {
+				double pred = classifier.classifyInstance(pTestSet.instance(i));
+				fileWriter.append(NEW_LINE_SEPARATOR);
+				fileWriter.append(pTestSet.instance(i).stringValue(0));
+				fileWriter.append(COMMA_DELIMITER);
+				fileWriter.append(""+ (int) pTestSet.instance(i).value(1));
+				fileWriter.append(COMMA_DELIMITER);
+				fileWriter.append(""+ (int) pTestSet.instance(i).value(2));
+				fileWriter.append(COMMA_DELIMITER);
+				fileWriter.append(""+ (int) pTestSet.instance(i).value(3));
+				fileWriter.append(COMMA_DELIMITER);
+				fileWriter.append(""+ (int) pTestSet.instance(i).value(4));
+				fileWriter.append(COMMA_DELIMITER);
+				fileWriter.append(""+ (int) pTestSet.instance(i).value(5));
+				fileWriter.append(COMMA_DELIMITER);
+				fileWriter.append(""+ (int) pTestSet.instance(i).value(6));
+				fileWriter.append(COMMA_DELIMITER);
+				fileWriter.append(""+ (int) pTestSet.instance(i).value(7));
+				fileWriter.append(COMMA_DELIMITER);
+				fileWriter.append(""+ (int) pTestSet.instance(i).value(8));
+				fileWriter.append(COMMA_DELIMITER);
+				fileWriter.append(""+ pTestSet.classAttribute().value((int) pred));
+				
+			}
+			fileWriter.flush();
+			fileWriter.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+	}
+
+
+	public AbstractClassifier getClassifier() {
+		return classifier;
+	}
+	public void setClassifier(AbstractClassifier classifier) {
+		this.classifier = classifier;
+	}
+
+	public ArrayList<String> getPredictions() {
+		return predictions;
+	}
+
+	public void setPredictions(ArrayList<String> predictions) {
+		this.predictions = predictions;
+	}
+
+	
+	public Instances getpTrainingSet() {
+		return pTrainingSet;
+	}
+
+	public void setpTrainingSet(Instances pTrainingSet) {
+		this.pTrainingSet = pTrainingSet;
+	}
+
+	public Instances getpTestSet() {
+		return pTestSet;
+	}
+
+	public void setpTestSet(Instances pTestSet) {
+		this.pTestSet = pTestSet;
+	}
+
+	private AbstractClassifier classifier;
+	private ArrayList<String> predictions;
+	private Instances pTrainingSet;
+	private Instances pTestSet;
+	private static String COMMA_DELIMITER = ";";
+	private static String NEW_LINE_SEPARATOR = "\n";
+	private static String FILE_HEADER = "name;wmc;dit;noc;cbo;rfc;lcom;ca;npm;bug";
+	
 }
