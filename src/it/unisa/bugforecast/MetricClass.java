@@ -9,7 +9,7 @@ public class MetricClass {
 	
 
 	public MetricClass(String name, int one, int two, int three, int four, int five, int six, int seven, int eight,
-			int bug) {
+			boolean bug) {
 		super();
 		this.name = name;
 		this.one = one;
@@ -20,7 +20,7 @@ public class MetricClass {
 		this.six = six;
 		this.seven = seven;
 		this.eight = eight;
-		this.bug = false;
+		this.bug = bug;
 	}
 	
 	public String getName() {

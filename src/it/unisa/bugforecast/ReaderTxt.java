@@ -27,7 +27,20 @@ public class ReaderTxt {
 			     int six = Integer.parseInt(metrics[6]);
 			     int seven = Integer.parseInt(metrics[7]);
 			     int eight = Integer.parseInt(metrics[8]);
-			     list.add(new MetricClass(name,one,two,three,four,five,six,seven,eight,0));
+			     list.add(new MetricClass(name,one,two,three,four,five,six,seven,eight,false));
+			     if((line = br.readLine()) != null) {
+			    	 metrics = line.split(" ");
+			    	 name = metrics[0];
+			    	 one = Integer.parseInt(metrics[1]);
+				     two = Integer.parseInt(metrics[2]);
+				     three = Integer.parseInt(metrics[3]);
+				     four = Integer.parseInt(metrics[4]);
+				     five = Integer.parseInt(metrics[5]);
+				     six = Integer.parseInt(metrics[6]);
+				     seven = Integer.parseInt(metrics[7]);
+				     eight = Integer.parseInt(metrics[8]);
+				     list.add(new MetricClass(name,one,two,three,four,five,six,seven,eight,true));
+			     }
 			}
 			
 			return list;

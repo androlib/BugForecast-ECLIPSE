@@ -1,0 +1,11 @@
+it.unisa.bugforecast.MetricClass 22 1 0 0 23 165 2 22
+it.unisa.bugforecast.CreateCSV 2 1 0 1 25 0 1 2
+it.unisa.bugforecast.TrainingTestSets 10 1 0 2 17 0 0 3
+it.unisa.bugforecast.TestCKJM 2 1 0 1 6 1 0 2
+it.unisa.bugforecast.CSVtoARFF 2 1 0 3 16 1 1 2
+it.unisa.bugforecast.CreateTask 8 1 0 4 25 2 1 8
+it.unisa.bugforecast.Task 2 1 0 10 11 1 0 2
+it.unisa.bugforecast.TestCSV 2 1 0 2 9 1 0 2
+it.unisa.bugforecast.ReaderTxt 6 1 0 1 16 0 1 6
+it.unisa.bugforecast.Model 12 1 0 18 56 14 1 11
+it.unisa.bugforecast.TestModel 2 1 0 4 12 1 0 2
