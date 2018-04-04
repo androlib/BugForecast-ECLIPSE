@@ -80,7 +80,6 @@ public class Model {
 			getClassifier().buildClassifier(pTrainingSet);
 			Evaluation eval = new Evaluation(pTrainingSet);
 			
-			
 			eval.evaluateModel(getClassifier(), pTestSet);
 			
 			for (int i = 0; i < pTestSet.numInstances(); i++) {
@@ -102,10 +101,10 @@ public class Model {
 		
 	}
 	
-	public void generateFilePredictions() {
+	public void generateFilePredictions(String path) {
 		FileWriter fileWriter;
 		try {
-			fileWriter = new FileWriter("results.csv");
+			fileWriter = new FileWriter(path+"\\results.csv");
 			fileWriter.append(FILE_HEADER);
 			for (int i = 0; i < pTestSet.numInstances(); i++) {
 				double pred = classifier.classifyInstance(pTestSet.instance(i));

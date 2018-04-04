@@ -32,14 +32,14 @@ public class TestModel {
 			BufferedReader reader1 = new BufferedReader(new FileReader("MetricClasses.arff"));
 			
 			Instances test = new Instances(reader1);
-			Model model = new Model("Bagging",training,test);
+			Model model = new Model("Log",training,test);
 			Evaluation eval = model.buildAndEvaluate();
 			ArrayList<String> predictions = model.getPredictions();
 			
 			//System.out.println(eval.toSummaryString());
 			//System.out.println(eval.toClassDetailsString());
 			//System.out.println(eval.toMatrixString());
-			model.generateFilePredictions();
+			model.generateFilePredictions("C:\\Users\\aleso\\Desktop");
 			
 			
 			
