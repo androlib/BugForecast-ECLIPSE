@@ -55,17 +55,21 @@ public class Model {
 		case "Decision Table":
 			setClassifier(new DecisionTable());
 			break;
-		case "MLP": //non funziona
+		case "MLP": //non funziona, va in loop
 			setClassifier(new MultilayerPerceptron());
+			
 			break;
-		case "RBF": //non funziona
+		case "RBF": 
 			setClassifier(new RBFNetwork());
 			break;
 		case "NB":
 			setClassifier(new NaiveBayes());
 			break;
 		case "ASCI": //non funziona
+			//weka.core.UnsupportedAttributeTypeException:
+			//weka.classifiers.rules.ZeroR: Cannot handle unary class!
 			setClassifier(new ASCI());
+			
 			break;
 		default:
 			System.err.println("Unknown classifier.");

@@ -11,6 +11,10 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: gr.spinellis.ckjm,
  gr.spinellis.ckjm.ant,
  it.unisa.bugforecast,
+ no.uib.cipr.matrix,
+ no.uib.cipr.matrix.distributed,
+ no.uib.cipr.matrix.io,
+ no.uib.cipr.matrix.sparse,
  org.apache.bcel,
  org.apache.bcel.classfile,
  org.apache.bcel.generic,
@@ -190,4 +194,5 @@ Bundle-ClassPath: lib/ant.jar,
  lib/smote-1.0.3.jar,
  lib/weka-stable-3.8.1.jar,
  lib/XMeans.jar,
- .
+ .,
+ lib/mtj-0.9.13.jar

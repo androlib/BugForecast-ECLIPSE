@@ -245,7 +245,7 @@ public class ASCI extends ParallelMultipleClassifiersCombiner implements Technic
 			metaClassifierTraining.get(i).setValue(metaClassifierTraining.numAttributes() - 1,
 					m_Classifiers[bestClassifierOnInstance].getClass().toString());
 		}
-
+		
 		m_MetaClassifier.buildClassifier(metaClassifierTraining);
 	}
 

@@ -23,7 +23,10 @@ public class CSVtoARFF {
 			String proof = br.readLine();
 			if(proof == null) return false;
 			else {
-				if(proof.indexOf(";") > -1) return false; //controllo se ci sono ; invece di ,
+				if(proof.indexOf(";") > -1) {
+					br.close();
+					return false; //controllo se ci sono ; invece di ,
+				}
 			}
 			csv.setSource(new File(path));
 			ArffSaver arff = new ArffSaver();
@@ -31,6 +34,7 @@ public class CSVtoARFF {
             arff.setInstances(data);
             arff.setFile(new File(name+".arff"));
             arff.writeBatch();
+            br.close();
             return true;
             
 		} catch (IOException e) {
