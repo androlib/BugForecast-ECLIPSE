@@ -146,6 +146,48 @@ public class Model {
 		
 		
 	}
+	
+	public void generateFilePredictions() {
+		FileWriter fileWriter;
+		try {
+			fileWriter = new FileWriter("results.csv");
+			fileWriter.append(FILE_HEADER);
+			for (int i = 0; i < pTestSet.numInstances(); i++) {
+				double pred = classifier.classifyInstance(pTestSet.instance(i));
+				fileWriter.append(NEW_LINE_SEPARATOR);
+				fileWriter.append(pTestSet.instance(i).stringValue(0));
+				fileWriter.append(COMMA_DELIMITER);
+				fileWriter.append(""+ (int) pTestSet.instance(i).value(1));
+				fileWriter.append(COMMA_DELIMITER);
+				fileWriter.append(""+ (int) pTestSet.instance(i).value(2));
+				fileWriter.append(COMMA_DELIMITER);
+				fileWriter.append(""+ (int) pTestSet.instance(i).value(3));
+				fileWriter.append(COMMA_DELIMITER);
+				fileWriter.append(""+ (int) pTestSet.instance(i).value(4));
+				fileWriter.append(COMMA_DELIMITER);
+				fileWriter.append(""+ (int) pTestSet.instance(i).value(5));
+				fileWriter.append(COMMA_DELIMITER);
+				fileWriter.append(""+ (int) pTestSet.instance(i).value(6));
+				fileWriter.append(COMMA_DELIMITER);
+				fileWriter.append(""+ (int) pTestSet.instance(i).value(7));
+				fileWriter.append(COMMA_DELIMITER);
+				fileWriter.append(""+ (int) pTestSet.instance(i).value(8));
+				fileWriter.append(COMMA_DELIMITER);
+				fileWriter.append(""+ pTestSet.classAttribute().value((int) pred));
+				
+			}
+			fileWriter.flush();
+			fileWriter.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+	}
 
 
 	public AbstractClassifier getClassifier() {
@@ -185,7 +227,7 @@ public class Model {
 	private Instances pTrainingSet;
 	private Instances pTestSet;
 	private static String COMMA_DELIMITER = ";";
-	private static String NEW_LINE_SEPARATOR = "\n";
+	private static String NEW_LINE_SEPARATOR = "\r\n";
 	private static String FILE_HEADER = "name;wmc;dit;noc;cbo;rfc;lcom;ca;npm;bug";
 	
 }

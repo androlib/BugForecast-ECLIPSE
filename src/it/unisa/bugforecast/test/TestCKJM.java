@@ -1,6 +1,8 @@
-package it.unisa.bugforecast;
+package it.unisa.bugforecast.test;
 
 import java.io.File;
+
+import it.unisa.bugforecast.CreateTask;
 
 
 public class TestCKJM {

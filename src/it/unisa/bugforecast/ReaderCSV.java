@@ -5,9 +5,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class ReaderTxt {
+/**
+aleso
+*/
+public class ReaderCSV {
 
-	public ReaderTxt(FileReader f) {
+	public ReaderCSV(FileReader f) {
 		// TODO Auto-generated constructor stub
 		br = new BufferedReader(f);
 		list = new ArrayList<MetricClass>();
@@ -15,9 +18,11 @@ public class ReaderTxt {
 	
 	public ArrayList<MetricClass> execute() {
 		String line = null;
+		
 		try {
+			br.readLine();
 			while((line = br.readLine()) != null) {
-			     String[] metrics = line.split(" ");
+			     String[] metrics = line.split(";");
 			     String name = metrics[0];
 			     int one = Integer.parseInt(metrics[1]);
 			     int two = Integer.parseInt(metrics[2]);
@@ -27,22 +32,13 @@ public class ReaderTxt {
 			     int six = Integer.parseInt(metrics[6]);
 			     int seven = Integer.parseInt(metrics[7]);
 			     int eight = Integer.parseInt(metrics[8]);
-			     list.add(new MetricClass(name,one,two,three,four,five,six,seven,eight,false));
-			     if((line = br.readLine()) != null) {
-			    	 metrics = line.split(" ");
-			    	 name = metrics[0];
-			    	 one = Integer.parseInt(metrics[1]);
-				     two = Integer.parseInt(metrics[2]);
-				     three = Integer.parseInt(metrics[3]);
-				     four = Integer.parseInt(metrics[4]);
-				     five = Integer.parseInt(metrics[5]);
-				     six = Integer.parseInt(metrics[6]);
-				     seven = Integer.parseInt(metrics[7]);
-				     eight = Integer.parseInt(metrics[8]);
-				     list.add(new MetricClass(name,one,two,three,four,five,six,seven,eight,true));
-			     }
+			     boolean flag = Boolean.parseBoolean(metrics[9]);
+			     
+			     
+			     list.add(new MetricClass(name,one,two,three,four,five,six,seven,eight,flag));
+			  
 			}
-			br.close();
+			
 			return list;
 		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
@@ -58,7 +54,6 @@ public class ReaderTxt {
 	public BufferedReader getBr() {
 		return br;
 	}
-
 	public void setBr(BufferedReader br) {
 		this.br = br;
 	}

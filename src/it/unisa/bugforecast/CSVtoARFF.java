@@ -21,7 +21,10 @@ public class CSVtoARFF {
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(path));
 			String proof = br.readLine();
-			if(proof == null) return false;
+			if(proof == null) {
+				br.close();
+				return false;
+			}
 			else {
 				if(proof.indexOf(";") > -1) {
 					br.close();
@@ -32,6 +35,11 @@ public class CSVtoARFF {
 			ArffSaver arff = new ArffSaver();
 			Instances data = csv.getDataSet();
             arff.setInstances(data);
+            File f = new File(name+".arff");
+            if(f.exists()) {
+            	
+                f.delete();
+            };
             arff.setFile(new File(name+".arff"));
             arff.writeBatch();
             br.close();

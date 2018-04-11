@@ -1,9 +1,13 @@
-package it.unisa.bugforecast;
+package it.unisa.bugforecast.test;
 
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
+
+import it.unisa.bugforecast.CreateCSV;
+import it.unisa.bugforecast.MetricClass;
+import it.unisa.bugforecast.ReaderTxt;
 
 
 public class TestCSV {

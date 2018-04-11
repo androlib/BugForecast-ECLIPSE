@@ -30,7 +30,6 @@ public class CreateTask {
 	public void startTask() {
 		lista(fInput);
 		files = nameFiles.toArray(new String[nameFiles.size()]);
-		
 		try {
 			OutputStream outputStream = new FileOutputStream(fOutput);
 			PrintPlainResults outputPlain = new PrintPlainResults(new PrintStream(outputStream));
@@ -41,7 +40,20 @@ public class CreateTask {
 		}
 	}
 	
-	public static void lista (File partenza) { 
+	public void startTask(ArrayList<String> nameFiles) {
+		this.nameFiles = nameFiles;
+		files = nameFiles.toArray(new String[nameFiles.size()]);
+		try {
+			OutputStream outputStream = new FileOutputStream(fOutput);
+			PrintPlainResults outputPlain = new PrintPlainResults(new PrintStream(outputStream));
+			MetricsFilter.runMetrics(files, outputPlain);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void lista (File partenza) { 
 		File[] list=partenza.listFiles(); 
 		int MAX=list.length;
 		for (int i = 0; i<MAX; i++){
@@ -49,7 +61,8 @@ public class CreateTask {
 				lista( list[i] ); 
 			else {
 				String nome = list[i].toString();
-				nameFiles.add(nome);
+				if(nome.substring(nome.lastIndexOf(".")).equals(".class"))
+					nameFiles.add(nome);
 			}
 		}
 	}
@@ -73,6 +86,6 @@ public class CreateTask {
 	private CkjmTask c;
 	private File fInput;
 	private File fOutput;
-	private static ArrayList<String> nameFiles;
+	private ArrayList<String> nameFiles;
 	private String[] files;
 }

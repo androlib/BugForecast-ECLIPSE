@@ -1,4 +1,4 @@
-package it.unisa.bugforecast;
+package it.unisa.bugforecast.test;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -7,6 +7,8 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.unisa.bugforecast.CSVtoARFF;
+import it.unisa.bugforecast.Model;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 import weka.classifiers.evaluation.Evaluation;
