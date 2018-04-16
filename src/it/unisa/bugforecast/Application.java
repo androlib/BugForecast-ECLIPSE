@@ -1,52 +1,39 @@
 package it.unisa.bugforecast;
 
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.FlowLayout;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
-import javax.swing.ButtonGroup;
+
+
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
 
-import org.apache.tools.ant.types.CommandlineJava.SysProperties;
-import org.apache.tools.ant.types.resources.Resources;
+
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Resource;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.Form;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.part.ViewPart;
 
-import weka.classifiers.evaluation.Evaluation;
 import weka.core.Instances;
 
 public class Application extends ViewPart {
@@ -56,7 +43,6 @@ public class Application extends ViewPart {
 	private Button externalProjectRadio;
 	private Button eclipseProjectRadio;
 	private Button selectIntProjectButton;
-	private Button projectsRadioButton;
 	private Button buildModelButton;
 	private MultiSelectionCombo comboClass;
 	private Combo comboProjects;
@@ -318,7 +304,7 @@ public class Application extends ViewPart {
 		});
 	}
 
-
+	//usa progetto esterno
 	private void createSubmitButton() {
 		GridData gridData = new GridData();
 		gridData.horizontalAlignment = GridData.FILL;
@@ -388,14 +374,7 @@ public class Application extends ViewPart {
 									model = new Model(classifierComboBox.getText(), training, test);
 									model.buildAndEvaluate();
 									model.generateFilePredictions(outputFolderText.getText());
-									File f1 = new File("file.txt");
-									File f2 = new File("trainingSet.arff");
-									File f3 = new File("testSet.csv");
-									File f4 = new File("testSet.arff");
-									if(f1.exists()) f1.delete();
-									if(f2.exists()) f2.delete();
-									if(f3.exists()) f3.delete();
-									if(f4.exists()) f4.delete();
+									deleteFiles();
 									
 
 								}
@@ -424,7 +403,7 @@ public class Application extends ViewPart {
 
 		buildModelButton.setLayoutData(gridData);
 	}
-	
+	//usa progetto interno
 	public void createEclipseProjectButton() {
 		File fInput = new File(workspace);
 		String a[] = fInput.list();
@@ -557,14 +536,7 @@ public class Application extends ViewPart {
 									model.buildAndEvaluate();
 									model.generateFilePredictions();
 									getPreditions("results.csv");
-									File f1 = new File("file.txt");
-									File f2 = new File("trainingSet.arff");
-									File f3 = new File("testSet.csv");
-									File f4 = new File("testSet.arff");
-									if(f1.exists()) f1.delete();
-									if(f2.exists()) f2.delete();
-									if(f3.exists()) f3.delete();
-									if(f4.exists()) f4.delete();
+									deleteFiles();
 									shell.close();
 
 								}
@@ -609,22 +581,11 @@ public class Application extends ViewPart {
 									reader.close();
 									model = new Model(classifierComboBox.getText(), training, test);
 								}
-								
-
-								
-									
-									model.setpTestSet(test);
+								    model.setpTestSet(test);
 									model.buildAndEvaluate();
 									model.generateFilePredictions();
 									getPreditions("results.csv");
-									File f1 = new File("file.txt");
-									File f2 = new File("trainingSet.arff");
-									File f3 = new File("testSet.csv");
-									File f4 = new File("testSet.arff");
-									if(f1.exists()) f1.delete();
-									if(f2.exists()) f2.delete();
-									if(f3.exists()) f3.delete();
-									if(f4.exists()) f4.delete();
+									deleteFiles();
 									shell.close();
 								
 							} catch (FileNotFoundException a) {
@@ -688,6 +649,18 @@ public class Application extends ViewPart {
 				}
 			}
 		}
+		
+	}
+	
+	public void deleteFiles() {
+		File f1 = new File("file.txt");
+		File f2 = new File("trainingSet.arff");
+		File f3 = new File("testSet.csv");
+		File f4 = new File("testSet.arff");
+		if(f1.exists()) f1.delete();
+		if(f2.exists()) f2.delete();
+		if(f3.exists()) f3.delete();
+		if(f4.exists()) f4.delete();
 		
 	}
 }

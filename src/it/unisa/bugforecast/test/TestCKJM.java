@@ -14,6 +14,7 @@ public class TestCKJM {
 		File fOutput = new File("file.txt");
 		CreateTask ct = new CreateTask(fInput, fOutput);
 		ct.startTask();
+		System.out.println(System.getProperty("user.dir"));
 	}
 	
 	
