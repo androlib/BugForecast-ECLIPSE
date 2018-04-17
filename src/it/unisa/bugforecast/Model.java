@@ -20,16 +20,16 @@ import weka.classifiers.trees.RandomForest;
 import weka.core.Instances;
 
 /**
-aleso
-*/
+ * aleso
+ */
 public class Model {
 
-	public Model(String classifierName, Instances pTrainingSet, Instances pTestSet) {
+	public Model(String classifierName, Instances pTrainingSet, Instances pTestSet, String optionsString) {
 		super();
 		this.pTrainingSet = pTrainingSet;
 		this.pTestSet = pTestSet;
 		predictions = new ArrayList<String>();
-		
+
 		switch (classifierName) {
 		case "Log":
 			setClassifier(new Logistic());
@@ -55,46 +55,58 @@ public class Model {
 		case "Decision Table":
 			setClassifier(new DecisionTable());
 			break;
-		case "MLP": //non funziona, va in loop
+		case "MLP": // non funziona, va in loop
 			setClassifier(new MultilayerPerceptron());
-			
+
 			break;
-		case "RBF": 
+		case "RBF":
 			setClassifier(new RBFNetwork());
 			break;
 		case "NB":
 			setClassifier(new NaiveBayes());
 			break;
-		case "ASCI": //non funziona
-			//weka.core.UnsupportedAttributeTypeException:
-			//weka.classifiers.rules.ZeroR: Cannot handle unary class!
+		case "ASCI": // non funziona
+			// weka.core.UnsupportedAttributeTypeException:
+			// weka.classifiers.rules.ZeroR: Cannot handle unary class!
 			setClassifier(new ASCI());
-			
+
 			break;
 		default:
 			System.err.println("Unknown classifier.");
 		}
+
+		if (optionsString != null) {
+			try {
+				String[] options = weka.core.Utils.splitOptions(optionsString);
+				classifier.setOptions(options);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
 	}
-	
+
 	public Evaluation buildAndEvaluate() {
 		pTrainingSet.setClassIndex(pTrainingSet.numAttributes() - 1);
 		pTestSet.setClassIndex(pTrainingSet.numAttributes() - 1);
-		
+
 		try {
 			getClassifier().buildClassifier(pTrainingSet);
 			Evaluation eval = new Evaluation(pTrainingSet);
-			
+
 			eval.evaluateModel(getClassifier(), pTestSet);
-			
+
 			for (int i = 0; i < pTestSet.numInstances(); i++) {
-				   double pred = classifier.classifyInstance(pTestSet.instance(i));
-				   System.out.print("ID: " + pTestSet.instance(i).value(0));
-				   System.out.print(", actual: " + pTestSet.classAttribute().value((int) pTestSet.instance(i).classValue()));
-				   System.out.println(", predicted: " + pTestSet.classAttribute().value((int) pred));
-				   predictions.add(pTestSet.classAttribute().value((int) pred));
-				 
-				 }
-			
+				double pred = classifier.classifyInstance(pTestSet.instance(i));
+				System.out.print("ID: " + pTestSet.instance(i).value(0));
+				System.out
+						.print(", actual: " + pTestSet.classAttribute().value((int) pTestSet.instance(i).classValue()));
+				System.out.println(", predicted: " + pTestSet.classAttribute().value((int) pred));
+				predictions.add(pTestSet.classAttribute().value((int) pred));
+
+			}
+
 			return eval;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -102,37 +114,36 @@ public class Model {
 			return null;
 		}
 
-		
 	}
-	
+
 	public void generateFilePredictions(String path) {
 		FileWriter fileWriter;
 		try {
-			fileWriter = new FileWriter(path+"\\results.csv");
+			fileWriter = new FileWriter(path + "\\results.csv");
 			fileWriter.append(FILE_HEADER);
 			for (int i = 0; i < pTestSet.numInstances(); i++) {
 				double pred = classifier.classifyInstance(pTestSet.instance(i));
 				fileWriter.append(NEW_LINE_SEPARATOR);
 				fileWriter.append(pTestSet.instance(i).stringValue(0));
 				fileWriter.append(COMMA_DELIMITER);
-				fileWriter.append(""+ (int) pTestSet.instance(i).value(1));
+				fileWriter.append("" + (int) pTestSet.instance(i).value(1));
 				fileWriter.append(COMMA_DELIMITER);
-				fileWriter.append(""+ (int) pTestSet.instance(i).value(2));
+				fileWriter.append("" + (int) pTestSet.instance(i).value(2));
 				fileWriter.append(COMMA_DELIMITER);
-				fileWriter.append(""+ (int) pTestSet.instance(i).value(3));
+				fileWriter.append("" + (int) pTestSet.instance(i).value(3));
 				fileWriter.append(COMMA_DELIMITER);
-				fileWriter.append(""+ (int) pTestSet.instance(i).value(4));
+				fileWriter.append("" + (int) pTestSet.instance(i).value(4));
 				fileWriter.append(COMMA_DELIMITER);
-				fileWriter.append(""+ (int) pTestSet.instance(i).value(5));
+				fileWriter.append("" + (int) pTestSet.instance(i).value(5));
 				fileWriter.append(COMMA_DELIMITER);
-				fileWriter.append(""+ (int) pTestSet.instance(i).value(6));
+				fileWriter.append("" + (int) pTestSet.instance(i).value(6));
 				fileWriter.append(COMMA_DELIMITER);
-				fileWriter.append(""+ (int) pTestSet.instance(i).value(7));
+				fileWriter.append("" + (int) pTestSet.instance(i).value(7));
 				fileWriter.append(COMMA_DELIMITER);
-				fileWriter.append(""+ (int) pTestSet.instance(i).value(8));
+				fileWriter.append("" + (int) pTestSet.instance(i).value(8));
 				fileWriter.append(COMMA_DELIMITER);
-				fileWriter.append(""+ pTestSet.classAttribute().value((int) pred));
-				
+				fileWriter.append("" + pTestSet.classAttribute().value((int) pred));
+
 			}
 			fileWriter.flush();
 			fileWriter.close();
@@ -143,10 +154,9 @@ public class Model {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
+
 	}
-	
+
 	public void generateFilePredictions() {
 		FileWriter fileWriter;
 		try {
@@ -157,24 +167,24 @@ public class Model {
 				fileWriter.append(NEW_LINE_SEPARATOR);
 				fileWriter.append(pTestSet.instance(i).stringValue(0));
 				fileWriter.append(COMMA_DELIMITER);
-				fileWriter.append(""+ (int) pTestSet.instance(i).value(1));
+				fileWriter.append("" + (int) pTestSet.instance(i).value(1));
 				fileWriter.append(COMMA_DELIMITER);
-				fileWriter.append(""+ (int) pTestSet.instance(i).value(2));
+				fileWriter.append("" + (int) pTestSet.instance(i).value(2));
 				fileWriter.append(COMMA_DELIMITER);
-				fileWriter.append(""+ (int) pTestSet.instance(i).value(3));
+				fileWriter.append("" + (int) pTestSet.instance(i).value(3));
 				fileWriter.append(COMMA_DELIMITER);
-				fileWriter.append(""+ (int) pTestSet.instance(i).value(4));
+				fileWriter.append("" + (int) pTestSet.instance(i).value(4));
 				fileWriter.append(COMMA_DELIMITER);
-				fileWriter.append(""+ (int) pTestSet.instance(i).value(5));
+				fileWriter.append("" + (int) pTestSet.instance(i).value(5));
 				fileWriter.append(COMMA_DELIMITER);
-				fileWriter.append(""+ (int) pTestSet.instance(i).value(6));
+				fileWriter.append("" + (int) pTestSet.instance(i).value(6));
 				fileWriter.append(COMMA_DELIMITER);
-				fileWriter.append(""+ (int) pTestSet.instance(i).value(7));
+				fileWriter.append("" + (int) pTestSet.instance(i).value(7));
 				fileWriter.append(COMMA_DELIMITER);
-				fileWriter.append(""+ (int) pTestSet.instance(i).value(8));
+				fileWriter.append("" + (int) pTestSet.instance(i).value(8));
 				fileWriter.append(COMMA_DELIMITER);
-				fileWriter.append(""+ pTestSet.classAttribute().value((int) pred));
-				
+				fileWriter.append("" + pTestSet.classAttribute().value((int) pred));
+
 			}
 			fileWriter.flush();
 			fileWriter.close();
@@ -185,14 +195,13 @@ public class Model {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-	}
 
+	}
 
 	public AbstractClassifier getClassifier() {
 		return classifier;
 	}
+
 	public void setClassifier(AbstractClassifier classifier) {
 		this.classifier = classifier;
 	}
@@ -205,7 +214,6 @@ public class Model {
 		this.predictions = predictions;
 	}
 
-	
 	public Instances getpTrainingSet() {
 		return pTrainingSet;
 	}
@@ -229,5 +237,5 @@ public class Model {
 	private static String COMMA_DELIMITER = ";";
 	private static String NEW_LINE_SEPARATOR = "\r\n";
 	private static String FILE_HEADER = "name;wmc;dit;noc;cbo;rfc;lcom;ca;npm;bug";
-	
+
 }

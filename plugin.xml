@@ -16,6 +16,14 @@
             class="it.unisa.bugforecast.Application"
             id="org.eclipse.ui.forms.article.views.FormView">
       </view>
+       <view
+            name="Result"
+            inject="true"
+            icon="icons/sample.png"
+            category="Result"
+            class="it.unisa.bugforecast.Result"
+            id="result">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">

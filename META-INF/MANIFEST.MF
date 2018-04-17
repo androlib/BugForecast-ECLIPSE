@@ -4,6 +4,7 @@ Bundle-Name: BugForecast-ECLIPSE
 Bundle-SymbolicName: BugForecast-ECLIPSE;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Require-Bundle: org.eclipse.core.runtime,
+  org.eclipse.core.resources,
   org.eclipse.ui,
   org.eclipse.ui.views;bundle-version="3.9.0",
   org.eclipse.ui.forms;bundle-version="3.7.100"
@@ -195,4 +196,5 @@ Bundle-ClassPath: lib/ant.jar,
  lib/weka-stable-3.8.1.jar,
  lib/XMeans.jar,
  .,
+ lib/org.eclipse.core.resources.jar,
  lib/mtj-0.9.13.jar

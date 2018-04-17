@@ -30,9 +30,16 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.widgets.Form;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.part.ViewPart;
+
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.ui.views.*;
 
 import weka.core.Instances;
 
@@ -59,15 +66,17 @@ public class Application extends ViewPart {
 	private ArrayList<String> namesClasses;
 	private String binPath;
 	private Model model;
+	private String options;
 
 	/**
 	 * The constructor.
 	 */
 	public Application() {
-		workspace = "C:\\Users\\aleso\\Desktop\\runtime-EclipseApplication\\";
+		workspace = ResourcesPlugin.getWorkspace().getRoot().getLocation().toString();
 		nameProject = null;
 		namesClasses = new ArrayList<String>();
 		binPath = null;
+		options = null;
 	}
 
 	/**
@@ -110,13 +119,14 @@ public class Application extends ViewPart {
 	}
 
 	public void createProjectTypeRadioButtons() {
+		
 		Label projectTypeLabel = new Label(form.getBody(), SWT.NULL);
-		projectTypeLabel.setText("Project-Type");
+		projectTypeLabel.setText("Project Type");
 		
 		Composite projectTypeRadioButtons = toolkit.createComposite(form.getBody(), SWT.NONE);
 		
-		externalProjectRadio = toolkit.createButton(projectTypeRadioButtons, "External-Project", SWT.RADIO);
-		eclipseProjectRadio = toolkit.createButton(projectTypeRadioButtons, "Eclipse-Project", SWT.RADIO);
+		eclipseProjectRadio = toolkit.createButton(projectTypeRadioButtons, "Eclipse Project", SWT.RADIO);
+		externalProjectRadio = toolkit.createButton(projectTypeRadioButtons, "External Project", SWT.RADIO);
 		eclipseProjectRadio.setSelection(true);
 		GridData gridData = new GridData();
 		gridData.horizontalAlignment = GridData.FILL;
@@ -295,7 +305,7 @@ public class Application extends ViewPart {
 				Object selected = classifierComboBox.getText();
 				String select = selected.toString();
 
-				JOptionPane.showInputDialog("Insert details", select);
+				options = JOptionPane.showInputDialog("Insert properties", select);
 			}
 
 			@Override
@@ -371,7 +381,7 @@ public class Application extends ViewPart {
 									Instances test = new Instances(reader1);
 									reader1.close();
 
-									model = new Model(classifierComboBox.getText(), training, test);
+									model = new Model(classifierComboBox.getText(), training, test, options);
 									model.buildAndEvaluate();
 									model.generateFilePredictions(outputFolderText.getText());
 									deleteFiles();
@@ -458,6 +468,9 @@ public class Application extends ViewPart {
 			@Override
 			public void mouseDoubleClick(MouseEvent e) {
 				// TODO Auto-generated method stub
+
+				
+		        System.out.println(ResourcesPlugin.getWorkspace().getRoot().getLocation());
 				namesClasses = new ArrayList<String>();
 				if(comboProjects.getText().equals("")) {
 					JOptionPane.showMessageDialog(null, "Please, select a project.", "Attention",
@@ -487,7 +500,7 @@ public class Application extends ViewPart {
 			            int [] selections = comboClass.getSelections();
 			            ArrayList<String> selectedClasses = new ArrayList<String>();
 			            for(int i = 0; i<selections.length; i++) {
-			            	selectedClasses.add(binPath+"\\"+namesClasses.get(selections[i]));
+			            	selectedClasses.add(binPath+"\\"+namesClasses.get(selections[i]).replaceAll(".java", ".class"));
 			            }
 			            CreateTask ct = new CreateTask();
 						ct.setfOutput(new File("file.txt"));
@@ -532,12 +545,21 @@ public class Application extends ViewPart {
 
 									Instances test = new Instances(reader1);
 									reader1.close();
-									model = new Model(classifierComboBox.getText(), training, test);
+									model = new Model(classifierComboBox.getText(), training, test, options);
 									model.buildAndEvaluate();
 									model.generateFilePredictions();
 									getPreditions("results.csv");
 									deleteFiles();
 									shell.close();
+									
+									try {
+										Result view = 
+												(Result) PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+												.getActivePage().showView("result");
+									} catch (PartInitException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
 
 								}
 							} catch (FileNotFoundException a) {
@@ -579,7 +601,7 @@ public class Application extends ViewPart {
 									BufferedReader reader = new BufferedReader(new FileReader("trainingSet.arff"));
 									Instances training = new Instances(reader);
 									reader.close();
-									model = new Model(classifierComboBox.getText(), training, test);
+									model = new Model(classifierComboBox.getText(), training, test, options);
 								}
 								    model.setpTestSet(test);
 									model.buildAndEvaluate();
@@ -587,6 +609,17 @@ public class Application extends ViewPart {
 									getPreditions("results.csv");
 									deleteFiles();
 									shell.close();
+									
+									
+									try {
+										Result view = 
+												(Result) PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+												.getActivePage().showView("result");
+									} catch (PartInitException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+									
 								
 							} catch (FileNotFoundException a) {
 								// TODO Auto-generated catch block
@@ -645,7 +678,7 @@ public class Application extends ViewPart {
 				if(nome.substring(nome.lastIndexOf(".")).equals(".class")) {
 					
 					int binPosition = nome.indexOf("\\bin\\");
-					namesClasses.add(nome.substring(binPosition+5));
+					namesClasses.add(nome.substring(binPosition+5).replaceAll(".class", ".java"));
 				}
 			}
 		}
