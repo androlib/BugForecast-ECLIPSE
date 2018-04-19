@@ -31,6 +31,8 @@ public class TestClass {
 		win.setSize(200,200);
 		win.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		win.setVisible(true);
+		String s = "ababa";
+		System.out.println(s.replace("b", "a"));
 	}
 
 }

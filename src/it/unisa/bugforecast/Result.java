@@ -1,19 +1,19 @@
 package it.unisa.bugforecast;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
 
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.widgets.Form;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
@@ -47,7 +48,8 @@ public class Result extends ViewPart implements IViewPart {
 	public TableItem item6;
 
 	public Result() {
-
+		tItems = new ArrayList<TableItem>();
+		workspace = ResourcesPlugin.getWorkspace().getRoot().getLocation().toString();
 	}
 
 	public void createPartControl(Composite parent) {
@@ -65,7 +67,6 @@ public class Result extends ViewPart implements IViewPart {
 		gridData.horizontalSpan = 3;
 
 		CreateTablePredictions();
-
 
 	}
 
@@ -87,7 +88,7 @@ public class Result extends ViewPart implements IViewPart {
 		table.setHeaderVisible(true);
 		table.setLayoutData(gridData);
 
-		String[] titles = { "Class", "Bug","  " };
+		String[] titles = { "Class", "Bug", "  " };
 		for (int i = 0; i < (titles.length); i++) {
 			TableColumn column = new TableColumn(table, SWT.NONE);
 			column.setText(titles[i]);
@@ -95,6 +96,7 @@ public class Result extends ViewPart implements IViewPart {
 
 		if (mc != null) {
 			for (MetricClass instance : mc) {
+
 				TableItem item = new TableItem(table, SWT.NONE);
 				String bug;
 				if (instance.getBug()) {
@@ -104,11 +106,56 @@ public class Result extends ViewPart implements IViewPart {
 				}
 				item.setText(0, instance.getName());
 				item.setText(1, bug);
-				
+				tItems.add(item);
+
 			}
-			
-			
+
 		}
+
+		table.addListener(SWT.Selection, new Listener() {
+
+			@Override
+			public void handleEvent(Event event) {
+				// TODO Auto-generated method stub
+
+				TableItem[] selection = table.getSelection();
+				String nameClassNoExt = "";
+				String nameClass = "";
+				for (int i = 0; i < selection.length; i++) {
+					nameClass += selection[i].getText(0) + ".java";
+					nameClassNoExt += selection[i].getText(0);
+				}
+
+				String nameProject = "";
+				try {
+					BufferedReader br = new BufferedReader(new FileReader(new File("projectPath.txt")));
+					nameProject += br.readLine();
+					br.close();
+				} catch (FileNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				String pathClass;
+				if (nameClassNoExt.contains(".")) {
+					nameClass = nameClassNoExt.replace(".", "/") + ".java";
+				}
+
+				pathClass = workspace + "/" + nameProject + "/src/" + nameClass;
+
+				try {
+					
+					OpenEditors.openFileInEditor(new File(pathClass));
+				} catch (PartInitException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+		});
+
 		for (int i = 0; i < titles.length; i++) {
 			table.getColumn(i).pack();
 		}
@@ -142,6 +189,8 @@ public class Result extends ViewPart implements IViewPart {
 		}
 	}
 
+	private String workspace;
 	private String path = "results.csv";
 	private ArrayList<MetricClass> mc;
+	private ArrayList<TableItem> tItems;
 }

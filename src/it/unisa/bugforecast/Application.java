@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -36,10 +37,8 @@ import org.eclipse.ui.forms.widgets.Form;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.part.ViewPart;
 
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.ui.views.*;
+
 
 import weka.core.Instances;
 
@@ -478,6 +477,8 @@ public class Application extends ViewPart {
 					return;
 				}
 				nameProject = comboProjects.getText();
+				
+				projectPathFile();
 				binPath= workspace + "\\" + nameProject + "\\bin"; 
 				File bin = new File(binPath);
 				listClass(bin);
@@ -588,9 +589,9 @@ public class Application extends ViewPart {
 								Instances test = new Instances(reader1);
 								reader1.close();
 
-								boolean convertFlag = CSVtoARFF.convert("trainingSet", trainingFileText.getText());
 								if((!trainingFileText.getText().isEmpty() || !trainingFileText.getText().equals("")) &&
 										(!classifierComboBox.getText().isEmpty() || !classifierComboBox.getText().equals(""))) {
+									boolean convertFlag = CSVtoARFF.convert("trainingSet", trainingFileText.getText());
 									if (!convertFlag) {
 										JOptionPane.showMessageDialog(null,
 												"Please, select a CSV training set with ',' as separator.", "Attention",
@@ -695,5 +696,19 @@ public class Application extends ViewPart {
 		if(f3.exists()) f3.delete();
 		if(f4.exists()) f4.delete();
 		
+	}
+	
+	public void projectPathFile() {
+		File f = new File("projectPath.txt");
+		if(f.exists()) f.delete();
+		try {
+			FileWriter fw = new FileWriter("projectPath.txt");
+			fw.write(nameProject);
+			fw.flush();
+			fw.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

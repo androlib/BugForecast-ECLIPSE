@@ -1,88 +1,37 @@
 package it.unisa.bugforecast;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.File;
 
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorReference;
-import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.ui.IEditorDescriptor;
+import org.eclipse.ui.IEditorRegistry;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.part.FileEditorInput;
 
 public class OpenEditors {
 
-    
-    public void execute() {
-        IWorkspace workspace = ResourcesPlugin.getWorkspace();
-        IWorkspaceRoot root = workspace.getRoot();
-        IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-        IEditorReference[] editorReferences = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
-                .getEditorReferences();
-        List<IEditorReference> editorsToBeClosed = new ArrayList<>();
-        Map<IFile, IEditorReference> fileEditors = new HashMap<>();
+	public static void openFileInEditor(File file) throws PartInitException {
+		
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IEditorRegistry editorRegistry = PlatformUI.getWorkbench().getEditorRegistry();
+		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		IPath location = Path.fromOSString(file.getAbsolutePath());
+		IFile ifile = workspace.getRoot().getFileForLocation(location);
+		FileEditorInput fileEditorInput = new FileEditorInput(ifile);
+		IPath filePath = ifile.getFullPath();
+		String filePathString = filePath.toString();
 
-        for (IEditorReference editorReference : editorReferences) {
-            try {
-                IEditorInput editorInput = editorReference.getEditorInput();
-                if (editorInput instanceof IFileEditorInput) {
-                    IFileEditorInput fileEditorInput = (IFileEditorInput) editorInput;
-                    IFile file = fileEditorInput.getFile();
-                    fileEditors.put(file, editorReference);
-                }
-            } catch (PartInitException e) {
-                e.printStackTrace();
-            }
+		IEditorDescriptor defaultEditor = editorRegistry.getDefaultEditor(filePathString);
+		String defaultEditorId = defaultEditor.getId();
 
-        }
-        activePage.closeEditors(editorReferences, true);
+		page.openEditor(fileEditorInput, defaultEditorId);
 
-        // Get all projects in the workspace
-        IProject[] projects = root.getProjects();
-        // Loop over all projects
-        for (IProject project : projects) {
-            try {
-                List<IFile> projectfiles = findAllProjectFiles(project);
-                for (IResource resource : projectfiles) {
-                    if (fileEditors.containsKey(resource)) {
-                        editorsToBeClosed.add(fileEditors.get(resource));
-                    }
-                }
-            } catch (CoreException e) {
-                e.printStackTrace();
-            }
-        }
-
-        IEditorReference[] editorToBeClosed = new IEditorReference[editorsToBeClosed.size()];
-        editorToBeClosed = editorsToBeClosed.toArray(editorToBeClosed);
-        activePage.closeEditors(editorToBeClosed, true);
-
-        
-    }
-
-    private List<IFile> findAllProjectFiles(IContainer container) throws CoreException {
-        IResource[] members = container.members();
-        List<IFile> list = new ArrayList<>();
-
-        for (IResource member : members) {
-            if (member instanceof IContainer) {
-                IContainer c = (IContainer) member;
-                list.addAll(findAllProjectFiles(c));
-            } else if (member instanceof IFile) {
-                list.add((IFile) member);
-            }
-        }
-        return list;
-    }
+	}
 
 }
