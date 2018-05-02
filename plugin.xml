@@ -24,6 +24,14 @@
             class="it.unisa.bugforecast.Result"
             id="result">
       </view>
+      <view
+            name="ExternalProject"
+            inject="true"
+            icon="icons/sample.png"
+            category="ExternalProject"
+            class="it.unisa.bugforecast.ExternalProject"
+            id="externalProject">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">

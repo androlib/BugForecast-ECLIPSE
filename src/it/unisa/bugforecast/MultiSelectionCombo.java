@@ -67,7 +67,7 @@ public class MultiSelectionCombo extends Composite {
       Point size = txtCurrentSelection.getSize();
       Rectangle shellRect = new Rectangle(p.x, p.y + size.y, size.x, 0);
       shell = new Shell(MultiSelectionCombo.this.getShell(), SWT.NO_TRIM);
-
+      
       GridLayout gl = new GridLayout();
       gl.marginBottom = 2;
       gl.marginTop = 2;

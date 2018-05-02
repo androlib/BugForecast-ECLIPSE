@@ -10,9 +10,12 @@ import java.util.ArrayList;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TabFolder;
@@ -83,7 +86,8 @@ public class Result extends ViewPart implements IViewPart {
 		sectionMetrics.setLayout(layout);
 
 		getPreditions();
-		Table table = toolkit.createTable(sectionMetrics, SWT.BORDER_SOLID);
+		Table table = toolkit.createTable(sectionMetrics, SWT.BORDER_SOLID | SWT.V_SCROLL | SWT.H_SCROLL );
+		
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
 		table.setLayoutData(gridData);
@@ -101,6 +105,10 @@ public class Result extends ViewPart implements IViewPart {
 				String bug;
 				if (instance.getBug()) {
 					bug = "Yes";
+					Device device = Display.getCurrent ();
+					Color red = new Color (device, 255, 0, 0);
+					item.setBackground(0, red);
+					item.setBackground(1, red);
 				} else {
 					bug = "No";
 				}

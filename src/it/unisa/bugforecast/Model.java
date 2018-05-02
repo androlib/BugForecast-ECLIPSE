@@ -2,6 +2,7 @@ package it.unisa.bugforecast;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import weka.classifiers.AbstractClassifier;
@@ -22,8 +23,12 @@ import weka.core.Instances;
 /**
  * aleso
  */
-public class Model {
+public class Model implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public Model(String classifierName, Instances pTrainingSet, Instances pTestSet, String optionsString) {
 		super();
 		this.pTrainingSet = pTrainingSet;
