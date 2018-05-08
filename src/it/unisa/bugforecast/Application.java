@@ -8,7 +8,6 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
@@ -19,8 +18,6 @@ import javax.swing.JOptionPane;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -29,16 +26,15 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ISelectionService;
 import org.eclipse.ui.forms.widgets.Form;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.part.ViewPart;
-
-import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.jface.viewers.IStructuredSelection;
 
 import weka.core.Instances;
 
@@ -46,12 +42,8 @@ public class Application extends ViewPart {
 	protected static final String CLOSED_OPTION = null;
 	private Form form;
 	private FormToolkit toolkit;
-	private Button selectIntProjectButton;
 	private Button saveModelButton;
 	private Button loadModelButton;
-	private MultiSelectionCombo comboClass;
-	private Combo comboProjects;
-	private Label comboProjectsLabel;
 	private Text trainingFileText;
 	private Combo classifierComboBox;
 	private Label classifierLabel;
@@ -61,21 +53,16 @@ public class Application extends ViewPart {
 	private Label outputModelLabel;
 	private Text loadModelText;
 	private Label loadModelLabel;
-	private String workspace;
 	private String nameProject;
 	private ArrayList<String> namesClasses;
-	private String binPath;
 	private Model model;
 	private String options;
+	private Button buildModelButton;
 
 	/**
 	 * The constructor.
 	 */
 	public Application() {
-		workspace = ResourcesPlugin.getWorkspace().getRoot().getLocation().toString();
-		nameProject = null;
-		namesClasses = new ArrayList<String>();
-		binPath = null;
 		options = null;
 	}
 
@@ -89,13 +76,11 @@ public class Application extends ViewPart {
 		GridLayout layout = new GridLayout(4, false);
 		form.getBody().setLayout(layout);
 
-		createBuildingModelSection();
+		createModelBuildingSection();
 		
-		createStrategiesSection();
+		createBuildModel();
 		
-		createModelApplicationSection();
-
-		createEclipseProjectButton();
+		createSubmitButton();
 		
 		createModelSavingSection();
 		
@@ -104,6 +89,8 @@ public class Application extends ViewPart {
 		createModelLoadingSection();
 
 		createLoadModel();
+		
+		
 	}
 
 	/**
@@ -122,7 +109,7 @@ public class Application extends ViewPart {
 	}
 
 
-	public void createBuildingModelSection () {
+	public void createModelBuildingSection () {
 		GridData gridData = new GridData();
 		gridData.horizontalAlignment = GridData.FILL;
 		gridData.horizontalSpan = 4;
@@ -131,14 +118,6 @@ public class Application extends ViewPart {
 		modelBuildingSection.setLayoutData(gridData);
 	}
 	
-	public void createModelApplicationSection() {
-		GridData gridData = new GridData();
-		gridData.horizontalAlignment = GridData.FILL;
-		gridData.horizontalSpan = 4;
-		Section modelBuildingSection = toolkit.createSection(form.getBody(), Section.DESCRIPTION | Section.TITLE_BAR);
-		modelBuildingSection.setText("Model Application");
-		modelBuildingSection.setLayoutData(gridData);
-	}
 	
 	public void createModelSavingSection() {
 		GridData gridData = new GridData();
@@ -309,11 +288,20 @@ public class Application extends ViewPart {
 			@Override
 			public void mouseDown(MouseEvent e) {
 				// TODO Auto-generated method stub
+				if(loadModelText.getText().isEmpty()) {
+					JOptionPane.showMessageDialog(null, "Please, select a model.", "Attention",
+							JOptionPane.INFORMATION_MESSAGE, new ImageIcon("icons//cartella.png"));
+					return;
+				}
 				try {
 					ObjectInputStream in = new ObjectInputStream(new FileInputStream(loadModelText.getText()));
 					Object o = in.readObject();
 					if(o instanceof Model) {
 					model = (Model) o;
+					ObjectOutputStream out = new ObjectOutputStream
+							(new FileOutputStream("Model.model"));
+					out.writeObject(model);
+					out.close();
 					}
 					else {
 						JOptionPane.showMessageDialog(null, "This file isn't a model.", "Attention",
@@ -339,7 +327,7 @@ public class Application extends ViewPart {
 		});
 	}
 	
-	public void createStrategiesSection() {
+	public void createBuildModel() {
 		GridData gridData = new GridData();
 		gridData.horizontalAlignment = GridData.FILL;
 		gridData.horizontalSpan = 3;
@@ -417,225 +405,122 @@ public class Application extends ViewPart {
 		});
 	}
 
-
-	// usa progetto interno
-	public void createEclipseProjectButton() {
-		File fInput = new File(workspace);
-		String a[] = fInput.list();
-		ArrayList<String> nameProjects = new ArrayList<String>();
-		for (int i = 0; i < a.length; i++) {
-			if (Character.isUpperCase(a[i].charAt(0))) {
-				nameProjects.add(a[i]);
-			}
-		}
-		String items[] = nameProjects.toArray(new String[nameProjects.size()]);
-
-		comboProjectsLabel = new Label(form.getBody(), SWT.BORDER);
-		comboProjectsLabel.setText("Eclipse Projects");
-
-		comboProjects = new Combo(form.getBody(), SWT.CENTER | SWT.READ_ONLY | SWT.DROP_DOWN);
-		comboProjects.setItems(items);
-		GridData gridData2 = new GridData();
-		gridData2.horizontalAlignment = GridData.FILL;
-		gridData2.horizontalSpan = 2;
-		comboProjects.setLayoutData(gridData2);
-
-		GridData gridData3 = new GridData();
-		gridData3.horizontalAlignment = GridData.FILL;
-
-		selectIntProjectButton = toolkit.createButton(form.getBody(), "Select Classes and Apply Model", SWT.NULL);
-	
-		selectIntProjectButton.setLayoutData(gridData3);
-
-		selectIntProjectButton.addMouseListener(new MouseListener() {
-
+	private void createSubmitButton() {
+		GridData gridData = new GridData();
+		gridData.horizontalAlignment = GridData.FILL;
+		gridData.horizontalSpan = 4;
+		buildModelButton = toolkit.createButton(form.getBody(), "Build Model", SWT.NULL);
+		
+		buildModelButton.addMouseListener(new MouseListener() {
 			@Override
-			public void mouseUp(MouseEvent e) {
-				// TODO Auto-generated method stub
-
+			public void mouseDoubleClick(MouseEvent e) {
 			}
 
 			@Override
 			public void mouseDown(MouseEvent e) {
-				// TODO Auto-generated method stub
 
-			}
+				buildModelButton.addMouseListener(new MouseListener() {
+					@Override
+					public void mouseDoubleClick(MouseEvent e) {
+					}
 
-			@Override
-			public void mouseDoubleClick(MouseEvent e) {
-				// TODO Auto-generated method stub
+					@Override
+					public void mouseDown(MouseEvent e) {
 
-				System.out.println(ResourcesPlugin.getWorkspace().getRoot().getLocation());
-				namesClasses = new ArrayList<String>();
-				if (comboProjects.getText().equals("")) {
-					JOptionPane.showMessageDialog(null, "Please, select a project.", "Attention",
-							JOptionPane.INFORMATION_MESSAGE, new ImageIcon("icons//cartella.png"));
-					return;
-				}
-				nameProject = comboProjects.getText();
-
-				projectPathFile();
-				binPath = workspace + "\\" + nameProject + "\\bin";
-				File bin = new File(binPath);
-				listClass(bin);
-				String[] classes = namesClasses.toArray(new String[namesClasses.size()]);
-
-				Shell shell = new Shell();
-				shell.setLayout(new GridLayout());
-
-				int[] selection = new int[] { 0 };
-				comboClass = new MultiSelectionCombo(shell, classes, selection, SWT.NONE);
-				comboClass.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
-				((GridData) comboClass.getLayoutData()).widthHint = 300;
-
-				Button button = new Button(shell, SWT.NONE);
-				button.setText("Generate Predictions");
-				button.addSelectionListener(new SelectionAdapter() {
-					public void widgetSelected(SelectionEvent event) {
-
-						int[] selections = comboClass.getSelections();
-						ArrayList<String> selectedClasses = new ArrayList<String>();
-						for (int i = 0; i < selections.length; i++) {
-							selectedClasses.add(
-									binPath + "\\" + namesClasses.get(selections[i]).replaceAll(".java", ".class"));
-						}
-						CreateTask ct = new CreateTask();
-						ct.setfOutput(new File("file.txt"));
-						ct.startTask(selectedClasses);
-						if (model == null
-								&& (trainingFileText.getText().isEmpty() || trainingFileText.getText().equals(""))) {
-							JOptionPane.showMessageDialog(null,
-									"Please, create the model first and insert training file.", "Attention",
+						if (trainingFileText.getText().isEmpty() || classifierComboBox.getText().isEmpty()) {
+							JOptionPane.showMessageDialog(null, "Some input data are missing.", "Attention",
 									JOptionPane.INFORMATION_MESSAGE, new ImageIcon("icons//cartella.png"));
-							shell.close();
-							return;
-						}
+						} else {
 
-						if (model == null) {
-							if (classifierComboBox.getText().isEmpty()) {
-								JOptionPane.showMessageDialog(null, "Please, select a classifier.", "Attention",
-										JOptionPane.INFORMATION_MESSAGE, new ImageIcon("icons//cartella.png"));
-								shell.close();
-								return;
-							}
-							ReaderTxt rt;
-							CreateCSV csv;
 							try {
-
-								rt = new ReaderTxt(new FileReader("file.txt"));
-								ArrayList<MetricClass> list = rt.execute();
-								csv = new CreateCSV("testSet.csv", list);
-								csv.execute();
 
 								boolean convertFlag = CSVtoARFF.convert("trainingSet", trainingFileText.getText());
 								if (!convertFlag) {
 									JOptionPane.showMessageDialog(null,
 											"Please, select a CSV training set with ',' as separator.", "Attention",
 											JOptionPane.INFORMATION_MESSAGE, new ImageIcon("icons//cartella.png"));
-									shell.close();
 								}
 
 								else {
 									BufferedReader reader = new BufferedReader(new FileReader("trainingSet.arff"));
 									Instances training = new Instances(reader);
 									reader.close();
-									CSVtoARFF.convert("testSet", "testSet.csv");
-									BufferedReader reader1 = new BufferedReader(new FileReader("testSet.arff"));
 
-									Instances test = new Instances(reader1);
-									reader1.close();
-									model = new Model(classifierComboBox.getText(), training, test, options);
-									model.buildAndEvaluate();
-									model.generateFilePredictions();
-									getPreditions("results.csv");
-									deleteFiles();
-									shell.close();
-
-									try {
-										Result view = (Result) PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-												.getActivePage().showView("result");
-									} catch (PartInitException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									}
+									model = new Model(classifierComboBox.getText(), training, options);
+									ObjectOutputStream out = new ObjectOutputStream
+											(new FileOutputStream("Model.model"));
+									out.writeObject(model);
+									out.close();
 
 								}
 							} catch (FileNotFoundException a) {
 								// TODO Auto-generated catch block
-								shell.close();
 								a.printStackTrace();
 							} catch (IOException e1) {
 								// TODO Auto-generated catch block
-								shell.close();
 								e1.printStackTrace();
-							}
-						} else {
-							ReaderTxt rt;
-							CreateCSV csv;
-							try {
-
-								rt = new ReaderTxt(new FileReader("file.txt"));
-								ArrayList<MetricClass> list = rt.execute();
-								csv = new CreateCSV("testSet.csv", list);
-								csv.execute();
-
-								CSVtoARFF.convert("testSet", "testSet.csv");
-								BufferedReader reader1 = new BufferedReader(new FileReader("testSet.arff"));
-
-								Instances test = new Instances(reader1);
-								reader1.close();
-
-								if ((!trainingFileText.getText().isEmpty() || !trainingFileText.getText().equals(""))
-										&& (!classifierComboBox.getText().isEmpty()
-												|| !classifierComboBox.getText().equals(""))) {
-									boolean convertFlag = CSVtoARFF.convert("trainingSet", trainingFileText.getText());
-									if (!convertFlag) {
-										JOptionPane.showMessageDialog(null,
-												"Please, select a CSV training set with ',' as separator.", "Attention",
-												JOptionPane.INFORMATION_MESSAGE, new ImageIcon("icons//cartella.png"));
-										shell.close();
-										return;
-									}
-									BufferedReader reader = new BufferedReader(new FileReader("trainingSet.arff"));
-									Instances training = new Instances(reader);
-									reader.close();
-									model = new Model(classifierComboBox.getText(), training, test, options);
-								}
-								model.setpTestSet(test);
-								model.buildAndEvaluate();
-								model.generateFilePredictions();
-								getPreditions("results.csv");
-								deleteFiles();
-								shell.close();
-
-								try {
-									Result view = (Result) PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-											.getActivePage().showView("result");
-
-								} catch (PartInitException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-
-							} catch (FileNotFoundException a) {
-								// TODO Auto-generated catch block
-								a.printStackTrace();
-								shell.close();
-							} catch (IOException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-								shell.close();
 							}
 						}
+
+					}
+
+					@Override
+					public void mouseUp(MouseEvent e) {
 					}
 				});
 
-				shell.pack();
-				shell.open();
+			}
 
+			@Override
+			public void mouseUp(MouseEvent e) {
 			}
 		});
 
+		buildModelButton.setLayoutData(gridData);
+	}
+
+	public void test() {
+		GridData gridData3 = new GridData();
+		gridData3.horizontalAlignment = GridData.FILL;
+
+		Button test = toolkit.createButton(form.getBody(), "Test", SWT.NULL);
+	
+		test.setLayoutData(gridData3);
+		
+		test.addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseUp(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseDown(MouseEvent e) {
+				// TODO Auto-generated method stub
+				ISelectionService service = getSite().getWorkbenchWindow()
+			            .getSelectionService();
+				IStructuredSelection structured = (IStructuredSelection) service
+			            .getSelection("org.eclipse.jdt.ui.PackageExplorer");
+				Object o = structured.iterator();
+				if(o instanceof IFile) {
+					System.out.println("Yes");
+				}
+				else {
+					System.out.println("No");
+				}
+				IFile file = (IFile) structured.getFirstElement();
+				IPath path = file.getLocation();
+				System.out.println(path.toPortableString());
+				
+			}
+			
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 	}
 
 	public void getPreditions(String path) {

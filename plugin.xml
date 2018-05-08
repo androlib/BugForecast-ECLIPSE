@@ -25,12 +25,12 @@
             id="result">
       </view>
       <view
-            name="ExternalProject"
+            name="ModelApplication"
             inject="true"
             icon="icons/sample.png"
-            category="ExternalProject"
-            class="it.unisa.bugforecast.ExternalProject"
-            id="externalProject">
+            category="ModelApplication"
+            class="it.unisa.bugforecast.ModelApplication"
+            id="modelApplication">
       </view>
    </extension>
    <extension

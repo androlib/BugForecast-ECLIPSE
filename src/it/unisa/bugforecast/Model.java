@@ -91,6 +91,68 @@ public class Model implements Serializable {
 		}
 
 	}
+	
+	public Model(String classifierName, Instances pTrainingSet, String optionsString) {
+		super();
+		this.pTrainingSet = pTrainingSet;
+		predictions = new ArrayList<String>();
+
+		switch (classifierName) {
+		case "Log":
+			setClassifier(new Logistic());
+			break;
+		case "Voting":
+			setClassifier(new Vote());
+			break;
+		case "Bagging":
+			setClassifier(new Bagging());
+			break;
+		case "Boostring":
+			setClassifier(new AdaBoostM1());
+			break;
+		case "Random Forest":
+			setClassifier(new RandomForest());
+			break;
+		case "CODEP":
+			setClassifier(new Stacking());
+			break;
+		case "C45":
+			setClassifier(new J48());
+			break;
+		case "Decision Table":
+			setClassifier(new DecisionTable());
+			break;
+		case "MLP": // non funziona, va in loop
+			setClassifier(new MultilayerPerceptron());
+
+			break;
+		case "RBF":
+			setClassifier(new RBFNetwork());
+			break;
+		case "NB":
+			setClassifier(new NaiveBayes());
+			break;
+		case "ASCI": // non funziona
+			// weka.core.UnsupportedAttributeTypeException:
+			// weka.classifiers.rules.ZeroR: Cannot handle unary class!
+			setClassifier(new ASCI());
+
+			break;
+		default:
+			System.err.println("Unknown classifier.");
+		}
+
+		if (optionsString != null) {
+			try {
+				String[] options = weka.core.Utils.splitOptions(optionsString);
+				classifier.setOptions(options);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+	}
 
 	public Evaluation buildAndEvaluate() {
 		pTrainingSet.setClassIndex(pTrainingSet.numAttributes() - 1);
