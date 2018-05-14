@@ -45,8 +45,8 @@ public class ModelApplication extends ViewPart {
 	private Form form;
 	private FormToolkit toolkit;
 	private Button applyOffLinelButton;
-	private Label testFileLabel;
-	private Text testFileText;
+	private Label projectFileLabel;
+	private Text projectFileText;
 	private Text outputFolderText;
 	private Label outputFolderLabel;
 	private String workspace;
@@ -57,6 +57,10 @@ public class ModelApplication extends ViewPart {
 	private Combo comboProjects;
 	private Label comboProjectsLabel;
 	private Button selectIntProjectButton;
+	private Button offLineRadio;
+	private Button onLineRadio;
+	private Section onLineSection;
+	private Section offLineSection;
 
 	public ModelApplication() {
 		workspace = ResourcesPlugin.getWorkspace().getRoot().getLocation().toString();
@@ -74,6 +78,8 @@ public class ModelApplication extends ViewPart {
 		GridLayout layout = new GridLayout(4, false);
 		form.getBody().setLayout(layout);
 
+		createTypePredictionRadioButtons();
+		
 		createOnLinelSection();
 		
 		createOnLineButton();
@@ -97,18 +103,82 @@ public class ModelApplication extends ViewPart {
 		toolkit.dispose();
 		super.dispose();
 	}
+	
+	public void createTypePredictionRadioButtons() {
+		Label projectTypeLabel = new Label(form.getBody(), SWT.NULL);
+		projectTypeLabel.setText("Prediction Type");
+		
+		Composite projectTypeRadioButtons = toolkit.createComposite(form.getBody(), SWT.NONE);
+		
+		onLineRadio = toolkit.createButton(projectTypeRadioButtons, "On Line Prediction", SWT.RADIO);
+		offLineRadio = toolkit.createButton(projectTypeRadioButtons, "Off Line Prediction", SWT.RADIO);
+		
+		GridData gridData = new GridData();
+		gridData.horizontalAlignment = GridData.FILL;
+		gridData.horizontalSpan = 3;
+		projectTypeRadioButtons.setLayout(new GridLayout(3, false));
+		projectTypeRadioButtons.setLayoutData(gridData);
+		
+		offLineRadio.addMouseListener(new MouseListener() {
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseDown(MouseEvent e) {
+				projectFileLabel.setVisible(true);
+				projectFileText.setVisible(true);
+				outputFolderLabel.setVisible(true);
+				outputFolderText.setVisible(true);
+				applyOffLinelButton.setVisible(true);
+				offLineSection.setVisible(true);
+				onLineSection.setVisible(false);
+				comboProjectsLabel.setVisible(false);
+				comboProjects.setVisible(false);
+				selectIntProjectButton.setVisible(false);
+			}
+
+			@Override
+			public void mouseUp(MouseEvent e) {
+			}
+		});
+		onLineRadio.addMouseListener(new MouseListener() {
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseDown(MouseEvent e) {
+				projectFileLabel.setVisible(false);
+				projectFileText.setVisible(false);
+				outputFolderLabel.setVisible(false);
+				outputFolderText.setVisible(false);
+				applyOffLinelButton.setVisible(false);
+				offLineSection.setVisible(false);
+				onLineSection.setVisible(true);
+				comboProjectsLabel.setVisible(true);
+				comboProjects.setVisible(true);
+				selectIntProjectButton.setVisible(true);
+			}
+
+			@Override
+			public void mouseUp(MouseEvent e) {
+			}
+		});
+		onLineRadio.setSelection(true);
+	}
 
 	public void createOffLineButton() {
 		GridData gridData = new GridData();
 		gridData.horizontalAlignment = GridData.FILL;
 		gridData.horizontalSpan = 3;
 
-		testFileLabel = new Label(form.getBody(), SWT.BORDER);
-		testFileLabel.setText("Test File");
-		testFileText = new Text(form.getBody(), SWT.BORDER);
-		testFileText.setLayoutData(gridData);
-		testFileText.setEditable(false);
-		testFileText.addMouseListener(new MouseListener() {
+		projectFileLabel = new Label(form.getBody(), SWT.BORDER);
+		projectFileLabel.setText("Project File");
+		projectFileText = new Text(form.getBody(), SWT.BORDER);
+		projectFileText.setLayoutData(gridData);
+		projectFileText.setEditable(false);
+		projectFileText.addMouseListener(new MouseListener() {
 			@Override
 			public void mouseDoubleClick(MouseEvent e) {
 			}
@@ -121,7 +191,7 @@ public class ModelApplication extends ViewPart {
 
 				String directory = directoryDialog.open();
 				if (directory != null) {
-					testFileText.setText(directory);
+					projectFileText.setText(directory);
 				}
 
 			}
@@ -158,6 +228,8 @@ public class ModelApplication extends ViewPart {
 			public void mouseUp(MouseEvent e) {
 			}
 		});
+		
+		
 
 	}
 
@@ -183,12 +255,12 @@ public class ModelApplication extends ViewPart {
 					@Override
 					public void mouseDown(MouseEvent e) {
 
-						if (testFileText.getText().isEmpty() || outputFolderText.getText().isEmpty()) {
+						if (projectFileText.getText().isEmpty() || outputFolderText.getText().isEmpty()) {
 							JOptionPane.showMessageDialog(null, "Some input data are missing.", "Attention",
 									JOptionPane.INFORMATION_MESSAGE, new ImageIcon("icons//cartella.png"));
 						} else {
 
-							File fInput = new File(testFileText.getText());
+							File fInput = new File(projectFileText.getText());
 							File fOutput = new File("file.txt");
 							CreateTask ct = new CreateTask(fInput, fOutput);
 							ct.startTask();
@@ -243,6 +315,12 @@ public class ModelApplication extends ViewPart {
 		});
 
 		applyOffLinelButton.setLayoutData(gridData);
+		projectFileLabel.setVisible(false);
+		projectFileText.setVisible(false);
+		outputFolderLabel.setVisible(false);
+		outputFolderText.setVisible(false);
+		applyOffLinelButton.setVisible(false);
+		offLineSection.setVisible(false);
 	}
 
 	public void createOnLineButton() {
@@ -394,7 +472,7 @@ public class ModelApplication extends ViewPart {
 		GridData gridData = new GridData();
 		gridData.horizontalAlignment = GridData.FILL;
 		gridData.horizontalSpan = 4;
-		Section offLineSection = toolkit.createSection(form.getBody(), Section.DESCRIPTION | Section.TITLE_BAR);
+		offLineSection = toolkit.createSection(form.getBody(), Section.DESCRIPTION | Section.TITLE_BAR);
 		offLineSection.setText("Off Line Prediction");
 		offLineSection.setLayoutData(gridData);
 	}
@@ -403,7 +481,7 @@ public class ModelApplication extends ViewPart {
 		GridData gridData = new GridData();
 		gridData.horizontalAlignment = GridData.FILL;
 		gridData.horizontalSpan = 4;
-		Section onLineSection = toolkit.createSection(form.getBody(), Section.DESCRIPTION | Section.TITLE_BAR);
+		onLineSection = toolkit.createSection(form.getBody(), Section.DESCRIPTION | Section.TITLE_BAR);
 		onLineSection.setText("On Line Prediction");
 		onLineSection.setLayoutData(gridData);
 	}

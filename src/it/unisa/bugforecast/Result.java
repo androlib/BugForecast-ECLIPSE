@@ -38,11 +38,11 @@ public class Result extends ViewPart implements IViewPart {
 	public Composite composite;
 	public TabFolder tabFolder;
 	public TabItem tab2;
-	public Application view;
+	public ModelManagement view;
 	public Table table2;
 	public Table table;
 	public String stringa;
-	public Application a;
+	public ModelManagement a;
 	public TableItem item;
 	public TableItem item2;
 	public TableItem item3;

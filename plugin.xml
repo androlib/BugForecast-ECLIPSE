@@ -13,7 +13,7 @@
             inject="true"
             icon="icons/sample.png"
             category="BugForecast"
-            class="it.unisa.bugforecast.Application"
+            class="it.unisa.bugforecast.ModelManagement"
             id="org.eclipse.ui.forms.article.views.FormView">
       </view>
        <view

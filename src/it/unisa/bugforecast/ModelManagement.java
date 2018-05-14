@@ -1,16 +1,13 @@
 package it.unisa.bugforecast;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
@@ -38,7 +35,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 
 import weka.core.Instances;
 
-public class Application extends ViewPart {
+public class ModelManagement extends ViewPart {
 	protected static final String CLOSED_OPTION = null;
 	private Form form;
 	private FormToolkit toolkit;
@@ -53,8 +50,6 @@ public class Application extends ViewPart {
 	private Label outputModelLabel;
 	private Text loadModelText;
 	private Label loadModelLabel;
-	private String nameProject;
-	private ArrayList<String> namesClasses;
 	private Model model;
 	private String options;
 	private Button buildModelButton;
@@ -62,7 +57,7 @@ public class Application extends ViewPart {
 	/**
 	 * The constructor.
 	 */
-	public Application() {
+	public ModelManagement() {
 		options = null;
 	}
 
@@ -205,18 +200,7 @@ public class Application extends ViewPart {
 				}
 				
 				else {
-					try {
-						ObjectOutputStream out = new ObjectOutputStream
-								(new FileOutputStream(outputModelText.getText()+"\\"+nameModelText.getText()+".model"));
-						out.writeObject(model);
-						out.close();
-					} catch (FileNotFoundException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
+					model.saveModel(outputModelText.getText(), nameModelText.getText());
 				}
 			}
 			
@@ -478,122 +462,5 @@ public class Application extends ViewPart {
 
 		buildModelButton.setLayoutData(gridData);
 	}
-
-	public void test() {
-		GridData gridData3 = new GridData();
-		gridData3.horizontalAlignment = GridData.FILL;
-
-		Button test = toolkit.createButton(form.getBody(), "Test", SWT.NULL);
 	
-		test.setLayoutData(gridData3);
-		
-		test.addMouseListener(new MouseListener() {
-			
-			@Override
-			public void mouseUp(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mouseDown(MouseEvent e) {
-				// TODO Auto-generated method stub
-				ISelectionService service = getSite().getWorkbenchWindow()
-			            .getSelectionService();
-				IStructuredSelection structured = (IStructuredSelection) service
-			            .getSelection("org.eclipse.jdt.ui.PackageExplorer");
-				Object o = structured.iterator();
-				if(o instanceof IFile) {
-					System.out.println("Yes");
-				}
-				else {
-					System.out.println("No");
-				}
-				IFile file = (IFile) structured.getFirstElement();
-				IPath path = file.getLocation();
-				System.out.println(path.toPortableString());
-				
-			}
-			
-			@Override
-			public void mouseDoubleClick(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
-	}
-
-	public void getPreditions(String path) {
-		try {
-			ReaderCSV rcsv = new ReaderCSV(new FileReader(path));
-			ArrayList<MetricClass> mc = rcsv.execute();
-			boolean bug = false;
-			String info = "These classes could have a bug: ";
-			for (MetricClass m : mc) {
-				if (m.getBug()) {
-					info += m.getName() + " ";
-					bug = true;
-				}
-			}
-
-			if (!bug) {
-				info += "none";
-			}
-			JOptionPane.showMessageDialog(null, info, "Attention", JOptionPane.INFORMATION_MESSAGE,
-					new ImageIcon("icons//cartella.png"));
-
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	public void listClass(File partenza) {
-		File[] list = partenza.listFiles();
-		int MAX = list.length;
-		for (int i = 0; i < MAX; i++) {
-			if (list[i].isDirectory())
-				listClass(list[i]);
-			else {
-				String nome = list[i].toString();
-				if (nome.substring(nome.lastIndexOf(".")).equals(".class")) {
-
-					int binPosition = nome.indexOf("\\bin\\");
-					namesClasses.add(nome.substring(binPosition + 5).replaceAll(".class", ".java"));
-				}
-			}
-		}
-
-	}
-
-	public void deleteFiles() {
-		File f1 = new File("file.txt");
-		File f2 = new File("trainingSet.arff");
-		File f3 = new File("testSet.csv");
-		File f4 = new File("testSet.arff");
-		if (f1.exists())
-			f1.delete();
-		if (f2.exists())
-			f2.delete();
-		if (f3.exists())
-			f3.delete();
-		if (f4.exists())
-			f4.delete();
-
-	}
-
-	public void projectPathFile() {
-		File f = new File("projectPath.txt");
-		if (f.exists())
-			f.delete();
-		try {
-			FileWriter fw = new FileWriter("projectPath.txt");
-			fw.write(nameProject);
-			fw.flush();
-			fw.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 }

@@ -1,7 +1,12 @@
 package it.unisa.bugforecast;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -29,6 +34,7 @@ public class Model implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
 	public Model(String classifierName, Instances pTrainingSet, Instances pTestSet, String optionsString) {
 		super();
 		this.pTrainingSet = pTrainingSet;
@@ -91,7 +97,7 @@ public class Model implements Serializable {
 		}
 
 	}
-	
+
 	public Model(String classifierName, Instances pTrainingSet, String optionsString) {
 		super();
 		this.pTrainingSet = pTrainingSet;
@@ -264,6 +270,23 @@ public class Model implements Serializable {
 		}
 
 	}
+
+	public void saveModel(String path, String name) {
+		ObjectOutputStream out;
+		try {
+			out = new ObjectOutputStream(new FileOutputStream(path + "\\" + name + ".model"));
+			out.writeObject(this);
+			out.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
 
 	public AbstractClassifier getClassifier() {
 		return classifier;
